@@ -31,3 +31,16 @@
     transform: rotate(360deg);
   }
 }
+
+.marTop56 {
+  margin-top: 86px !important;
+}
+
+.padRightLeft0{
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.marLeftRight20 {
+  margin: 20px 20px 20px 20px !important;
+}
