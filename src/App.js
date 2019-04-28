@@ -8,10 +8,10 @@ import Feed from './components/feed/Feed';
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <>
         <Login />
-        <Feed />
-      </div>
+        {/* <Feed /> */}
+      </>
     );
   }
 }
