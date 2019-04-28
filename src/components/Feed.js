@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import Post from '../post/Post';
+import Post from '../components/Post';
 import {
     CardDeck,
     Container,
     Row,
     Col,
 } from 'react-bootstrap';
-import User from '../user/User';
+import User from './User';
 
 export default class Feed extends Component {
 

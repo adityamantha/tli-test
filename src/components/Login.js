@@ -8,8 +8,8 @@ import {
     InputGroup,
     Navbar,
 } from 'react-bootstrap';
-import '../../App.css';
-import Signup from './Signup';
+import '../assets/App.css';
+import Signup from '../components/Signup';
 
 class Login extends Component {
 
