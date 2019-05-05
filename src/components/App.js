@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../assets/App.css';
 import {
-  Router,
+  BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
@@ -11,6 +11,10 @@ import Feed from './Feed';
 import { getToken } from '../services/tokenService';
 
 class App extends Component {
+
+  state = {
+    user: null,
+  }
 
   fetchUser = async () => {
     console.group('App::fetchUser');
@@ -70,7 +74,35 @@ class App extends Component {
             />
           </Switch>
         </Router> */}
-        <Login fetchUser={this.fetchUser} />
+        <Router>
+        <Switch>
+            <Route
+              exact path='/'
+              render={(renderProps) => (
+                (this.state.user)
+                  ? (<Redirect to='/feed' />)
+                  : (<Redirect to='/login' />)
+              )}
+            />
+            <Route
+            exact path='/feed'
+            render={(renderProps) => (
+              (this.state.user)
+                ? (<Feed />)
+                : (<Login fetchUser={this.fetchUser} />)
+            )}
+          />
+          <Route 
+          exact path='/login'
+          render={(renderProps) => (
+            (!this.state.user)
+            ? (<Login fetchUser={this.fetchUser} />)
+            : (<Redirect to='/feed' />)
+          )}
+          />
+          </Switch>
+        </Router>
+        {/* <Login fetchUser={this.fetchUser} /> */}
       </>
     );
   }
