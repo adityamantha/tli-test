@@ -27,7 +27,7 @@
   },
   "scripts": {
     "deploy": "node api/server.js",
-    "build": "yarn run build:client && yarn run move:client",
+    "build": "react-scripts build",
     "lint": "eslint .",
     "start:server": "pm2 start process.config.js",
     "stop:server": "pm2 delete process.config.js",
