@@ -6,7 +6,7 @@ export default class Signup extends Component {
         return(
             <>
             <h1>Join Today!</h1>
-            Write your mind out, hassel free writing.
+            Write your heart and mind out, hassel free writing.
             </>
         )
     }

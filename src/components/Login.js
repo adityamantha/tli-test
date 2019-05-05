@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
     Form,
     FormControl,
@@ -9,7 +10,10 @@ import {
     Navbar,
 } from 'react-bootstrap';
 import '../assets/App.css';
+import { debounce } from 'lodash';
 import Signup from '../components/Signup';
+import { setToken } from '../services/tokenService';
+
 
 class Login extends Component {
 
@@ -22,11 +26,33 @@ class Login extends Component {
 
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
+        this.debounceChange = debounce(this.handleInputChange, 300);
+    }
+
+    login = async () => {
+        try {
+            const { loginEmail, loginPassword } = this.state;
+            const loginResponse = await fetch('/api/users/login', {
+                method: 'POST',
+                body: JSON.stringify({ email:loginEmail, password:loginPassword }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const { data } = await loginResponse.json();
+            const [tokenData] = data;
+            const { token } = tokenData;
+            setToken(token);
+            this.props.fetchUser();
+        } catch (e) {
+            console.error('error:', e);
+        }
     }
 
     handleInputChange(event) {
         const target = event.target;
-        const value = (target.type === 'radio'  || target.type === 'checkbox') ? target.id : target.value;
+        const value = (target.type === 'radio' || target.type === 'checkbox') ? target.id : target.value;
         const name = target.name;
         this.setState({
             [name]: value,
@@ -39,8 +65,10 @@ class Login extends Component {
             event.preventDefault();
             event.stopPropagation();
         }
-        if (form.name === 'login')
+        if (form.name === 'login') {
             this.setState({ validateLogin: true });
+            this.login();
+        }
         if (form.name === 'signUp')
             this.setState({ validateSignUp: true })
 
@@ -139,20 +167,20 @@ class Login extends Component {
                                         </Form.Group>
                                     </Col>
                                     <Col>
-                                    <Form.Group controlId="username">
-                                        <InputGroup className="mb-3">
-                                            <InputGroup.Prepend>
-                                                <InputGroup.Text>@</InputGroup.Text>
-                                            </InputGroup.Prepend>
-                                            <FormControl
-                                                required
-                                                placeholder="Username"
-                                                aria-label="Username"
-                                                aria-describedby="username"
-                                                name="username"
-                                                onChange={this.handleInputChange}
-                                            />
-                                        </InputGroup>
+                                        <Form.Group controlId="username">
+                                            <InputGroup className="mb-3">
+                                                <InputGroup.Prepend>
+                                                    <InputGroup.Text>@</InputGroup.Text>
+                                                </InputGroup.Prepend>
+                                                <FormControl
+                                                    required
+                                                    placeholder="Username"
+                                                    aria-label="Username"
+                                                    aria-describedby="username"
+                                                    name="username"
+                                                    onChange={this.handleInputChange}
+                                                />
+                                            </InputGroup>
                                         </Form.Group>
                                     </Col>
                                 </Row>
@@ -221,25 +249,25 @@ class Login extends Component {
                                     </Form.Group>
                                 </Row>
                                 <Row>
-                                <Form.Group as={Col}>
-                                    <Form.Check
-                                        type="radio"
-                                        label="Female"
-                                        name="gender"
-                                        id="female"
-                                        onChange={this.handleInputChange}
-                                        required
-                                        inline
-                                    />
-                                    <Form.Check
-                                        type="radio"
-                                        label="Male"
-                                        name="gender"
-                                        id="male"
-                                        onChange={this.handleInputChange}
-                                        required
-                                        inline
-                                    />
+                                    <Form.Group as={Col}>
+                                        <Form.Check
+                                            type="radio"
+                                            label="Female"
+                                            name="gender"
+                                            id="female"
+                                            onChange={this.handleInputChange}
+                                            required
+                                            inline
+                                        />
+                                        <Form.Check
+                                            type="radio"
+                                            label="Male"
+                                            name="gender"
+                                            id="male"
+                                            onChange={this.handleInputChange}
+                                            required
+                                            inline
+                                        />
                                     </Form.Group>
                                 </Row>
                                 <Row>
@@ -258,5 +286,10 @@ class Login extends Component {
         )
     }
 }
+
+Login.propTypes = {
+    classes: PropTypes.object,
+    fetchUser: PropTypes.func,
+};
 
 export default Login;

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.3.1",
     "express": "^4.16.4",
@@ -11,20 +12,29 @@
     "jquery": "^3.4.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.4",
+    "nodemon": "^1.19.0",
     "path": "^0.12.7",
+    "pm2": "^3.5.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-avatar": "^3.6.0",
     "react-bootstrap": "^1.0.0-beta.8",
     "react-dom": "^16.8.6",
     "react-infinite-scroller": "^1.2.4",
+    "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
     "resolve-url-loader": "^3.1.0"
   },
   "scripts": {
     "deploy": "node api/server.js",
-    "build": "react-scripts build",
+    "build": "yarn run build:client && yarn run move:client",
+    "lint": "eslint .",
+    "start:server": "pm2 start process.config.js",
+    "stop:server": "pm2 delete process.config.js",
+    "logs:server": "pm2 logs /api/ --lines 10",
     "start:client": "react-scripts start",
+    "build:client": "react-scripts build",
+    "move:client": "cp -R build/ public",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -39,5 +49,11 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "proxy": "http://localhost:4000",
+  "semistandard": {
+    "ignore": [
+      "build/**"
+    ]
+  }
 }
