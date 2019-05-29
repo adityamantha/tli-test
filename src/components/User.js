@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import Avatar from 'react-avatar';
 
 export default class User extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
+        const name = `${this.props.user.firstName} ${this.props.user.lastName}`;
+        console.log(name);
         return (
-            <Avatar name="Aditya Mantha" round="100px" size="200" />
+            <Avatar name={name} round="100px" size="200" />
         );
     }
 }

@@ -12,11 +12,13 @@ const postSchema = exports.schema = new Schema({
         type: String,
         required: true,
     },
-    author: 
+    author: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Users',
+            ref: 'User',
+            required: true,
         },
+    ],  
     dateCreated: Date,
     dateUpdated: Date,
 });

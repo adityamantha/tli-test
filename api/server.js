@@ -21,16 +21,16 @@ router.use('/api/users', userRoutes);
 applyMiddleware(errorHandlers, router);
 
 
-// 1. Change route handler to return static folder
-const publicFolder = path.resolve(__dirname, '..', 'build');
-router.use('/', express.static(publicFolder));
+// // 1. Change route handler to return static folder
+// const publicFolder = path.resolve(__dirname, '..', 'build');
+// router.use('/', express.static(publicFolder));
 
-// 2. Add route handler to catch all requests
+// // 2. Add route handler to catch all requests
 
-router.get('*', (req, res, next) => {
-  const indexFile = path.resolve(publicFolder, 'index.html');
-  res.sendFile(indexFile);
-});
+// router.get('*', (req, res, next) => {
+//   const indexFile = path.resolve(publicFolder, 'index.html');
+//   res.sendFile(indexFile);
+// });
 const server = http.createServer(router);
 
 mongoose

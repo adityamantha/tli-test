@@ -32,7 +32,14 @@ const userSchema = exports.schema = new Schema({
     gender: {
         type: String,
         required: true,
-    }
+    },
+    dateOfBirth: {
+        type: Date,
+    },
+    firstSignIn: {
+        type: Boolean,
+        required: true,
+    },
 });
 
 userSchema.pre('save', async function (next) {

@@ -26,9 +26,7 @@ router.route('/')
 router.route('/login')
   .post(async (req, res, next) => {
     try {
-      console.log("Inside Login Route::");
       const user = await userService.isUser(req.body);
-      console.log("User logged in ::", user);
       if (user) {
         const token = await tokenService.issueToken(user);
         res.status(200).json({
@@ -44,6 +42,29 @@ router.route('/login')
       next(e);
     }
   });
+
+router.route('/signup')
+.post(async (req, res, next) => {
+  try{
+    console.log(req);
+    const user = await userService.createUser(req.body);
+    if (user) {
+      console.log("Created User :::", user);
+      const token = await tokenService.issueToken(user);
+        res.status(200).json({
+          data: [{
+            token,
+          }],
+        });
+        logRequest(req, res);
+    } else {
+      console.log(req);
+      next(new HTTP400Error());
+    }
+  } catch(e) {
+    next(e);
+  }
+});
 
 router.route('/me')
   .get(

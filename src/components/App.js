@@ -88,8 +88,8 @@ class App extends Component {
             exact path='/feed'
             render={(renderProps) => (
               (this.state.user)
-                ? (<Feed />)
-                : (<Login fetchUser={this.fetchUser} />)
+                ? (<Feed user={this.state.user} />)
+                : (<Redirect to='/login' />)
             )}
           />
           <Route 

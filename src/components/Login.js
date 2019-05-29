@@ -7,13 +7,13 @@ import {
     Row,
     Col,
     InputGroup,
-    Navbar,
 } from 'react-bootstrap';
 import '../assets/App.css';
 import { debounce } from 'lodash';
 import Signup from '../components/Signup';
 import { setToken } from '../services/tokenService';
-
+import NavbarLogin from './NavbarLogin';
+import Moment from 'moment';
 
 class Login extends Component {
 
@@ -21,12 +21,12 @@ class Login extends Component {
         super(props);
         this.state = {
             validateSignUp: false,
-            validateLogin: false,
-        }
-
+            firstSignIn: true,
+            isDateValid: '',
+        };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-
+        this.checkDate = this.checkDate.bind(this);
         this.debounceChange = debounce(this.handleInputChange, 300);
     }
 
@@ -35,7 +35,7 @@ class Login extends Component {
             const { loginEmail, loginPassword } = this.state;
             const loginResponse = await fetch('/api/users/login', {
                 method: 'POST',
-                body: JSON.stringify({ email:loginEmail, password:loginPassword }),
+                body: JSON.stringify({ email: loginEmail, password: loginPassword }),
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -50,6 +50,48 @@ class Login extends Component {
         }
     }
 
+    signUp = async () => {
+        try {
+            const {
+                firstName,
+                lastName,
+                email,
+                username,
+                password,
+                confirmPassword,
+                date,
+                gender,
+                firstSignIn,
+            } = this.state;
+            const signUpResponse = await fetch('/api/users/signup', {
+                method: 'POST',
+                body: JSON.stringify({
+                    firstName,
+                    lastName,
+                    email,
+                    username,
+                    password,
+                    confirmPassword,
+                    date,
+                    gender,
+                    firstSignIn
+                }),
+                headers: {
+                    'Content-type': 'application/json',
+                },
+            });
+            const { data } = await signUpResponse.json();
+            console.log('response from the create::: ', data);
+            const [tokenData] = data;
+            const { token } = tokenData;
+            setToken(token);
+            this.props.fetchUser();
+
+        } catch (e) {
+            console.error('error:', e);
+        }
+    };
+
     handleInputChange(event) {
         const target = event.target;
         const value = (target.type === 'radio' || target.type === 'checkbox') ? target.id : target.value;
@@ -59,7 +101,18 @@ class Login extends Component {
         })
     }
 
+    checkDate(month, day, year) {
+        console.log(month, day, year);
+        const dateValidity = Moment(`${month}-${day}-${year}`, "MM-DD-YYYY").isValid();
+        console.log('Valid', dateValidity);
+        this.setState({ isDateValid: dateValidity });
+        console.log('Inside check date:::', this.state.isDateValid);
+        return this.state.isDateValid;
+    };
+
+
     handleSubmit(event) {
+        this.setState({ isDateValid: true });
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -67,10 +120,26 @@ class Login extends Component {
         }
         if (form.name === 'login') {
             this.setState({ validateLogin: true });
-            this.login();
+            if (form.name === 'login' && form.checkValidity() === true) {
+                this.login();
+            }
         }
         if (form.name === 'signUp')
             this.setState({ validateSignUp: true })
+        if (form.name === 'signUp' && form.checkValidity() === true) {
+            const isDateValid = Moment(`${this.state.month}-${this.state.day}-${this.state.year}`, "MM-DD-YYYY").isValid();
+            console.log('Date :: ', isDateValid);
+            if (isDateValid) {
+                this.signUp();
+            } else {
+                this.setState(function(state, props) {
+                    return {
+                        isDateValid: false
+                    };
+                  });
+                console.log("Date Validity ::: ", this.state.isDateValid);
+            }
+        }
 
         event.preventDefault();
         event.stopPropagation();
@@ -80,40 +149,11 @@ class Login extends Component {
         const { validateSignUp, validateLogin } = this.state;
         return (
             <>
-                <Navbar bg="primary" variant="dark" fixed="top">
-                    <Col>
-                        <Navbar.Brand>T.L.I</Navbar.Brand>
-                    </Col>
-                    <Col>
-                        <Form
-                            name="login"
-                            inline
-                            noValidate
-                            validated={validateLogin}
-                            onSubmit={e => this.handleSubmit(e)}
-                        >
-                            <FormControl
-                                type="email"
-                                name="loginEmail"
-                                id="loginEmail"
-                                onChange={this.handleInputChange}
-                                placeholder="Email"
-                                className="mr-sm-2"
-                                required
-                            />
-                            <FormControl
-                                type="password"
-                                name="loginPassword"
-                                id="loginPassword"
-                                onChange={this.handleInputChange}
-                                placeholder="Password"
-                                className="mr-sm-2"
-                                required
-                            />
-                            <Button variant="outline-light" type="submit">Log In</Button>
-                        </Form>
-                    </Col>
-                </Navbar>
+                <NavbarLogin
+                    validateLogin={validateLogin}
+                    handleSubmit={this.handleSubmit}
+                    handleInputChange={this.handleInputChange}
+                />
                 <div className="container marTop56">
                     <Row>
                         <Col>
@@ -222,6 +262,7 @@ class Login extends Component {
                                             max="12"
                                             placeholder="Month"
                                             required
+                                            isValid={this.state.isDateValid}
                                         />
                                     </Form.Group>
 
@@ -233,6 +274,7 @@ class Login extends Component {
                                             max="31"
                                             placeholder="Day"
                                             required
+                                            isValid={this.state.isDateValid}
                                         />
                                     </Form.Group>
 
@@ -245,6 +287,7 @@ class Login extends Component {
                                             max="2001"
                                             placeholder="Year"
                                             required
+                                            isValid={this.state.isDateValid}
                                         />
                                     </Form.Group>
                                 </Row>
